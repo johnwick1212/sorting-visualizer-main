@@ -6,9 +6,12 @@ import InputSizeSlider from './InputSizeSlider';
 import RandomizeButton from './RandomizeButton';
 import SpeedSlider from './SpeedSlider';
 import StartButton from './StartButton';
+import ArrayDropDown from './ArrayDropDown';
+import BenchmarkingButton from './BenchmarkingButton';
 
 const HomeHeader = ({
   algorithms,
+  array,
   onAlgorithmChange,
   currentAlgorithm,
   onSpeedChange,
@@ -16,6 +19,8 @@ const HomeHeader = ({
   onRandomize,
   onStart,
   isVisualizing,
+  onArrayChange,
+  currentArray,
 }) => {
   const openUrl = (url) => {
     window.open(url, '_blank')?.focus();
@@ -49,6 +54,12 @@ const HomeHeader = ({
         isVisualizing={isVisualizing}
         onAlgorithmChange={(algo) => onAlgorithmChange(algo)}
       />
+      <ArrayDropDown 
+      array={array} 
+      isVisualizing={isVisualizing} 
+      currentArray={currentArray}
+      onArrayChange={(arr) => onArrayChange(arr)}
+      />
       <SpeedSlider
         onSpeedChange={onSpeedChange}
         isVisualizing={isVisualizing}
@@ -57,8 +68,9 @@ const HomeHeader = ({
         onInputSizeChanged={onInputSizeChanged}
         isVisualizing={isVisualizing}
       />
+      <BenchmarkingButton />
       <RandomizeButton onClick={onRandomize} />
-      <StartButton onClick={onStart} />
+      <StartButton onClick={onStart}/>
     </Row>
   );
 };

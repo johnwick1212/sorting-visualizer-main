@@ -3,64 +3,58 @@ import asyncSetTimeout from "../helpers/asyncSetTimeout";
 const radixSort = async ({
     array,
     setArray,
-    setColorsArray,
-    visualizationSpeed
+    visualizationSpeed,
+    timeRequired,
+  setTimeRequired
 } = {}) => {
-    let n = array.length;
-    //max function
-    function getMax(arr) {
-        var maxele = arr[0];
-        for (let i = 1; i < arr.length; i++) {
-            if (arr[i] > maxele) {
-                maxele = arr[i];
+    timeRequired = 0;
+    setTimeRequired(timeRequired)
+    var t1 = performance.now();
+    let test = [];
+
+    function getDigit(num, i) {
+        return Math.floor(Math.abs(num) / Math.pow(10, i)) % 10;
+    }
+    function digitCount(num) {
+        if (num === 0) return 1;
+        return Math.floor(Math.log10(Math.abs(num))) + 1;
+    }
+    function mostDigit(num) {
+        let maxdigist = 0;
+        for (let i = 0; i < num.length; i++) {
+            maxdigist = Math.max(maxdigist, digitCount(num[i]));
+        }
+        return maxdigist;
+    }
+    function radixsort(num) {
+        let maxDigitCount = mostDigit(num);
+        for (let k = 0; k < maxDigitCount; k++) {
+            let digitBuckets = Array.from({
+                length: 10
+            }, () => []);
+            for (let i = 0; i < num.length; i++) {
+                let digit = getDigit(num[i], k);
+                digitBuckets[digit].push(num[i]);
             }
+            // reforming array
+            test.push(num);
+            num = [].concat(...digitBuckets);
+            console.log(num);
         }
-        return maxele;
+        return num;
     }
-    //count sort
-    async function countSort(arr, n, exp) {
-        let output = new Array(n);
-        let i;
-        let count = new Array(10);
-        for (let i = 0; i < 10; i++) {
-            count[i] = 0;
-        }
-        for (i = 0; i < n; i++) {
-            let newColorsArray = new Array(n).fill(0);
-            newColorsArray[i] = 1;
-            setColorsArray(newColorsArray);
-            asyncSetTimeout({timeout:visualizationSpeed})
-            count[Math.floor(arr[i] / exp) % 10]++;
-        }
-        for (i = 1; i < 10; i++) {
-            let newColorsArray = new Array(n).fill(0);
-            newColorsArray[i] = 1;
-            setColorsArray(newColorsArray);
-            asyncSetTimeout({ timeout: visualizationSpeed })
-            count[i] += count[i - 1];
-        }
-        for (i = n - 1; i >= 0; i--) {
-            let newColorsArray = new Array(n).fill(0);
-            newColorsArray[i] = 1;
-            setColorsArray(newColorsArray);
-            asyncSetTimeout({ timeout: visualizationSpeed })
-            output[count[Math.floor(arr[i] / exp) % 10] - 1] = arr[i];
-            count[Math.floor(arr[i] / exp) % 10]--;
-        }
-        for (i = 0; i < n; i++) {
-            let newColorArray = new Array(n).fill(0);
-            newColorArray[i] = 2;
-            setColorsArray(newColorArray);
-            arr[i] = output[i];
-            asyncSetTimeout({timeout:visualizationSpeed})
-        }
+    let res = radixsort(array);
+    //change here to correct the visualization
+    await asyncSetTimeout({timeout:10*visualizationSpeed})
+    for(let i=0;i<test.length;i++){
+        await asyncSetTimeout({timeout:200});
+        setArray(test[i]);
+        await asyncSetTimeout({timeout:visualizationSpeed*100});
     }
-    let m = getMax(array);
-    for (let exp = 1; Math.floor(m / exp) > 0; exp *= 10) {
-        asyncSetTimeout({ timeout: visualizationSpeed })
-        countSort(array, n, exp);
-    }
-    setColorsArray([])
+    await asyncSetTimeout({timeout:visualizationSpeed*10});
+    setArray(res);
+    var t2 = performance.now();
+    setTimeRequired(t2-t1)
 }
 
 export default radixSort;
